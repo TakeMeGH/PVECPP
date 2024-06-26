@@ -47,9 +47,14 @@ public:
 	FGameplayAttributeData Defense;
 	ATTRIBUTE_ACCESSORS(UPlayerAttributeSet, Defense)
 
+	UPROPERTY(BlueprintReadOnly, Category = "AttackModifier", ReplicatedUsing = OnRep_AttackModifier)
+	FGameplayAttributeData AttackModifier;
+	ATTRIBUTE_ACCESSORS(UPlayerAttributeSet, AttackModifier)
+	
 	UPROPERTY(BlueprintReadOnly, Category = "MovementSpeed", ReplicatedUsing = OnRep_MovementSpeed)
 	FGameplayAttributeData MovementSpeed;
 	ATTRIBUTE_ACCESSORS(UPlayerAttributeSet, MovementSpeed)
+
 
 	UPROPERTY(BlueprintReadOnly, Category = "OutputDamage")
 	FGameplayAttributeData OutputDamage;
@@ -70,6 +75,9 @@ public:
 	virtual void OnRep_Defense(const FGameplayAttributeData& OldDefense);
 	UFUNCTION()
 	virtual void OnRep_MovementSpeed(const FGameplayAttributeData& OldMovementSpeed);
+	UFUNCTION()
+	virtual void OnRep_AttackModifier(const FGameplayAttributeData& OldAttackModifier);
+
 
 
 
