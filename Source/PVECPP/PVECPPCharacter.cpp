@@ -74,6 +74,42 @@ void APVECPPCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
+void APVECPPCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (AbilitySystemComponent) {
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+
+	InitAttribute();
+	GiveDefaultAbilities();
+}
+
+void APVECPPCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	if (AbilitySystemComponent) {
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+
+	InitAttribute();
+}
+
+void APVECPPCharacter::InitAttribute()
+{
+}
+
+void APVECPPCharacter::GiveDefaultAbilities()
+{
+	if (HasAuthority() && AbilitySystemComponent) {
+		for (TSubclassOf<class UGameplayAbility>& StartupAbility : DefaultAbilities) {
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility.GetDefaultObject(), 1, 0));
+		}
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Input
 
