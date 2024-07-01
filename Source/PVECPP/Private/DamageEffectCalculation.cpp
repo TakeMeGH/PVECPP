@@ -13,6 +13,8 @@ struct GDDamageStatics
 	DECLARE_ATTRIBUTE_CAPTUREDEF(LowBaseAttackDamage);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(HighBaseAttackDamage);
 	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackModifier);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(Defense);
+
 
 
 	GDDamageStatics()
@@ -29,6 +31,8 @@ struct GDDamageStatics
 
 		// Capture the Target's Armor. Don't snapshot.
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UPlayerAttributeSet, Health, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UPlayerAttributeSet, Defense, Target, false);
+
 	}
 };
 
@@ -44,6 +48,8 @@ UDamageEffectCalculation::UDamageEffectCalculation()
 	RelevantAttributesToCapture.Add(DamageStatics().AttackModifierDef);
 	RelevantAttributesToCapture.Add(DamageStatics().LowBaseAttackDamageDef);
 	RelevantAttributesToCapture.Add(DamageStatics().HighBaseAttackDamageDef);
+	RelevantAttributesToCapture.Add(DamageStatics().DefenseDef);
+
 }
 
 
@@ -77,8 +83,13 @@ void UDamageEffectCalculation::Execute_Implementation(const FGameplayEffectCusto
 	float AttackModifier = 0.0f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().AttackModifierDef, EvaluationParameters, AttackModifier);
 
+	float Defense = 0.0f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DefenseDef, EvaluationParameters, Defense);
+
+
 	float RandomRangeFloat = FMath::FRandRange(LowBaseAttackDamage, HighBaseAttackDamage);
 	float Result = RandomRangeFloat * AttackModifier;
+	Result = Result * (1 - (Defense / (Defense + 270)));
 	Result = FMath::TruncToInt(Result);
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(DamageStatics().HealthDef.AttributeToCapture, EGameplayModOp::Additive, -Result));
